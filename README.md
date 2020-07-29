@@ -24,3 +24,19 @@ Example for lots of buttons:
         roundedButtons2.PaintButton(b);
       }
     }
+
+Note: Buttons painted with RoundedButtons have no Text.
+You can set the text normally, but you can not get the text.
+
+    RoundedButtons roundedButtons = new RoundedButtons();
+    roundedButtons.PaintButton(button1);
+    
+    button1.Text = "OK";
+
+    if (MyRoundedButtons.GetButtonText(b) == "OK") { this.Close(); }
+    
+This was done to allow painting of button Transparency.
+
+You can also remove the RoundedButtons paint and set the original button back by disposing.
+
+    roundedButtons.Dispose();
