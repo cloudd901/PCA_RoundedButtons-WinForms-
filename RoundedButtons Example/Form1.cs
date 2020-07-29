@@ -118,7 +118,7 @@ namespace RoundedButtons_Example
             else { roundedButtons4.Dispose(); }
         }
 
-        private void button19_Click(object sender, EventArgs e)
+        private void Button19_Click(object sender, EventArgs e)
         {
             Random r = new Random();
             int number;
