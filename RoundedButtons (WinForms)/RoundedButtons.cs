@@ -35,7 +35,7 @@ namespace PCAFFINITY
         public Color ClickTextColor { get; set; } = Color.GhostWhite;
         public Color ClickBGColor { get; set; } = Color.Empty;
 
-        private readonly Dictionary<Button, Button> ButtonCopies = new Dictionary<Button, Button>();
+        private readonly Dictionary<Button, Button> _ButtonDataDictionary = new Dictionary<Button, Button>();
         public bool IsDisposed = false;
 
         private event MouseEventHandler MouseEventClick;
@@ -85,7 +85,7 @@ namespace PCAFFINITY
         {
             if (sender is Button b)
             {
-                ButtonCopies.Add(b, b.Clone());
+                _ButtonDataDictionary.Add(b, b.Clone());
 
                 //Following configuration fixes transparency issues.
                 //Fixes issue with Transparency over Pictureboxes.
@@ -114,12 +114,19 @@ namespace PCAFFINITY
         private void B_TextChanged(object sender, EventArgs e)
         {
             Button b = (Button)sender;
-            ButtonCopies.TryGetValue(b, out Button copy);
+            _ButtonDataDictionary.TryGetValue(b, out Button copy);
             copy.Text = b.Text;
 
             b.TextChanged -= B_TextChanged;
             b.Text = "";
             b.TextChanged += B_TextChanged;
+        }
+        public string GetButtonText(Button button)
+        {
+            string text = "";
+            _ButtonDataDictionary.TryGetValue(button, out Button copy);
+            if (copy != null) { text = copy.Text; }
+            return text;
         }
 
         private void RoundedButton_Paint(object sender, PaintEventArgs e, ButtonAction action = ButtonAction.Normal)
@@ -142,7 +149,7 @@ namespace PCAFFINITY
             int shadowWidth = (Btn_ShadowWidth == ShadowSize.Thin) ? 1 : (Btn_ShadowWidth == ShadowSize.Normal) ? 2 : (Btn_ShadowWidth == ShadowSize.Thick) ? 3 : 0;
 
             Rectangle[] rect = CalculateRects(b, shadowWidth);
-            ButtonCopies.TryGetValue(b, out Button copy);
+            _ButtonDataDictionary.TryGetValue(b, out Button copy);
             //=====================================
 
             //===============Colors================
@@ -262,11 +269,11 @@ namespace PCAFFINITY
             {
                 if (disposing) { }
 
-                Button[] keys = ButtonCopies.Keys.ToArray();
+                Button[] keys = _ButtonDataDictionary.Keys.ToArray();
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    Button b = ButtonCopies.ElementAt(i).Key;
-                    Button copy = ButtonCopies.ElementAt(i).Value;
+                    Button b = _ButtonDataDictionary.ElementAt(i).Key;
+                    Button copy = _ButtonDataDictionary.ElementAt(i).Value;
 
                     b.Paint -= B_Paint;
                     b.EnabledChanged -= EventNormal;
@@ -282,7 +289,7 @@ namespace PCAFFINITY
                     b.Refresh();
                 }
 
-                ButtonCopies.Clear();
+                _ButtonDataDictionary.Clear();
                 IsDisposed = true;
             }
         }
