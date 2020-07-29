@@ -5,6 +5,8 @@ I've included color and line styles for Normal, Disabled, Highlighted, and Click
 Everything can be set when creating a new RoundedButtons object.
 Then just use that object to paint the buttons and subscribe to the events automatically.
 
+![Buttons](https://raw.githubusercontent.com/cloudd901/RoundedButtons/master/RoundedButtons-Painted.jpg)
+![Buttons](https://raw.githubusercontent.com/cloudd901/RoundedButtons/master/RoundedButtons-Normal.jpg)
 
 Example Script:
 
