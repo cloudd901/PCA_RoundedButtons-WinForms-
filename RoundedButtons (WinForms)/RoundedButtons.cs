@@ -140,7 +140,7 @@ namespace PCAFFINITY
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
             e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
-            e.Graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            e.Graphics.TextRenderingHint = TextRenderingHint.SystemDefault; //Causes issues with application text.
 
             StringFormat stringFormat = new StringFormat
             {

@@ -94,4 +94,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties Viade-Afterburner-Debug="DisposeMonitoring=True|DeadlockDetection=True|DeadlockPrediction=True|ThreadsMap=True" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
