@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using PCAFFINITY;
-
-namespace RoundedButtons_Example
+﻿namespace RoundedButtons_Example
 {
+    using PCAFFINITY;
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Windows.Forms;
+
     public partial class Form1 : Form
     {
         public RoundedButtons roundedButtons1;
@@ -23,13 +22,62 @@ namespace RoundedButtons_Example
             button16.Parent = pictureBox1;
         }
 
+        private void Button17_Click(object sender, EventArgs e)
+        {
+            if (roundedButtons2.IsDisposed)
+            {
+                RoundSection2();
+            }
+            else
+            {
+                roundedButtons2.Dispose(); roundedButtons3.Dispose();
+            }
+        }
+
+        private void Button18_Click(object sender, EventArgs e)
+        {
+            if (roundedButtons4.IsDisposed)
+            {
+                RoundSection3();
+            }
+            else
+            {
+                roundedButtons4.Dispose();
+            }
+        }
+
+        private void Button19_Click(object sender, EventArgs e)
+        {
+            Random r = new Random();
+            int number = r.Next(1000, 999999);
+            button8.Text = number.ToString();
+            number = r.Next(1000, 999999);
+            button9.Text = number.ToString();
+            number = r.Next(1000, 999999);
+            button10.Text = number.ToString();
+        }
+
+        private void Button7_Click(object sender, EventArgs e)
+        {
+            if (roundedButtons1.IsDisposed)
+            {
+                RoundSection1();
+            }
+            else
+            {
+                roundedButtons1.Dispose();
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             RoundSection1();
-
             RoundSection2();
-
             RoundSection3();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
         }
 
         private void RoundSection1()
@@ -40,8 +88,7 @@ namespace RoundedButtons_Example
                 Btn_ShadowWidth = ShadowSize.Thin
             };
 
-            List<dynamic> parents = new List<dynamic>() { panel1, panel2 };
-            foreach (dynamic parent in parents)
+            foreach (dynamic parent in new List<dynamic>() { panel1, panel2 })
             {
                 foreach (object o in parent.Controls)
                 {
@@ -52,10 +99,10 @@ namespace RoundedButtons_Example
                 }
             }
         }
+
         private void RoundSection2()
         {
             roundedButtons2 = new RoundedButtons();
-
             foreach (object o in panel3.Controls)
             {
                 if (o is Button b)
@@ -65,7 +112,7 @@ namespace RoundedButtons_Example
             }
 
             roundedButtons3 = new RoundedButtons()
-            { 
+            {
                 Btn_CornerRadius = 10,
                 Btn_ShadowWidth = ShadowSize.Thin,
                 Btn_ShadowLocation = ShadowPosition.TopLeft
@@ -79,6 +126,7 @@ namespace RoundedButtons_Example
                 }
             }
         }
+
         private void RoundSection3()
         {
             roundedButtons4 = new RoundedButtons()
@@ -93,43 +141,6 @@ namespace RoundedButtons_Example
             roundedButtons4.PaintButton(button14);
             roundedButtons4.PaintButton(button15);
             roundedButtons4.PaintButton(button16);
-        }
-
-        private void Form1_Shown(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Button7_Click(object sender, EventArgs e)
-        {
-            if (roundedButtons1.IsDisposed) { RoundSection1(); }
-            else { roundedButtons1.Dispose(); }
-        }
-
-        private void Button17_Click(object sender, EventArgs e)
-        {
-            if (roundedButtons2.IsDisposed) { RoundSection2(); }
-            else { roundedButtons2.Dispose(); roundedButtons3.Dispose(); }
-        }
-
-        private void Button18_Click(object sender, EventArgs e)
-        {
-            if (roundedButtons4.IsDisposed) { RoundSection3(); }
-            else { roundedButtons4.Dispose(); }
-        }
-
-        private void Button19_Click(object sender, EventArgs e)
-        {
-            Random r = new Random();
-            int number;
-
-            number = r.Next(1000, 999999);
-            button8.Text = number.ToString();
-            number = r.Next(1000, 999999);
-            button9.Text = number.ToString();
-            number = r.Next(1000, 999999);
-            button10.Text = number.ToString();
-
         }
     }
 }
