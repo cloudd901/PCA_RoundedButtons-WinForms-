@@ -9,42 +9,108 @@ using System.Windows.Forms;
 
 namespace PCAFFINITY
 {
+    public enum ButtonAction
+    {
+        Highlight,
+        Click,
+        Disabled,
+        Normal
+    }
+
+    public enum ShadowPosition
+    {
+        BottomRight,
+        Bottom,
+        BottomLeft,
+        Left,
+        TopLeft,
+        Top,
+        TopRight,
+        Right
+    }
+
+    public enum ShadowSize
+    {
+        Thin,
+        Normal,
+        Thick,
+        None
+    }
+
+    public static class ControlExtensions
+    {
+        public static T Clone<T>(this T controlToClone)
+            where T : Control
+        {
+            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            T instance = Activator.CreateInstance<T>();
+
+            foreach (PropertyInfo propInfo in controlProperties)
+            {
+                if (propInfo.CanWrite)
+                {
+                    if (propInfo.Name != "WindowTarget")
+                        propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
+                }
+            }
+
+            return instance;
+        }
+
+        public static void Copy<T>(this T controlToClone, ref T targetControl)
+            where T : Control
+        {
+            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (PropertyInfo propInfo in controlProperties)
+            {
+                if (propInfo.CanWrite)
+                {
+                    if (propInfo.Name != "WindowTarget")
+                    { propInfo.SetValue(targetControl, propInfo.GetValue(controlToClone, null), null); }
+                }
+            }
+        }
+    }
+
     public class RoundedButtons : IDisposable
     {
-        public ShadowPosition Btn_ShadowLocation { get; set; } = ShadowPosition.BottomRight;
+        public bool IsDisposed;
+        private readonly Dictionary<Button, Button> _ButtonDataDictionary = new Dictionary<Button, Button>();
+
+        private event EventHandler EventHighlight;
+
+        private event EventHandler EventNormal;
+
+        private event MouseEventHandler MouseEventClick;
+
+        private event MouseEventHandler MouseEventHighlight;
+
         public int Btn_CornerRadius { get; set; } = 8;
         public int Btn_LineWidth { get; set; } = 1;
+        public ShadowPosition Btn_ShadowLocation { get; set; }
         public ShadowSize Btn_ShadowWidth { get; set; } = ShadowSize.Normal;
 
-        public Color MainLineColor { get; set; } = Color.Black;
-        public Color MainShadowColor { get; set; } = Color.DarkGray;
-        public Color MainTextColor { get; set; } = Color.Empty;
-        public Color MainBGColor { get; set; } = Color.Empty;
-
-        public Color DisabledLineColor { get; set; } = Color.LightGray;
-        public Color DisabledShadowColor { get; set; } = Color.DarkGray;
-        public Color DisabledTextColor { get; set; } = Color.Gray;
-        public Color DisabledBGColor { get; set; } = Color.Empty;
-
-        public Color HighlightLineColor { get; set; } = Color.Blue;
-        public Color HighlightShadowColor { get; set; } = Color.Black;
-        public Color HighlightTextColor { get; set; } = Color.Empty;
-        public Color HighlightBGColor { get; set; } = Color.Empty;
-
+        public Color ClickBGColor { get; set; } = Color.Empty;
         public Color ClickLineColor { get; set; } = Color.Black;
         public Color ClickShadowColor { get; set; } = Color.Black;
         public Color ClickTextColor { get; set; } = Color.GhostWhite;
-        public Color ClickBGColor { get; set; } = Color.Empty;
-
-        private readonly Dictionary<Button, Button> _ButtonDataDictionary = new Dictionary<Button, Button>();
-        public bool IsDisposed = false;
-
-        private event MouseEventHandler MouseEventClick;
-        private event MouseEventHandler MouseEventHighlight;
-        private event EventHandler EventHighlight;
-        private event EventHandler EventNormal;
+        public Color DisabledBGColor { get; set; } = Color.Empty;
+        public Color DisabledLineColor { get; set; } = Color.LightGray;
+        public Color DisabledShadowColor { get; set; } = Color.DarkGray;
+        public Color DisabledTextColor { get; set; } = Color.Gray;
+        public Color HighlightBGColor { get; set; } = Color.Empty;
+        public Color HighlightLineColor { get; set; } = Color.Blue;
+        public Color HighlightShadowColor { get; set; } = Color.Black;
+        public Color HighlightTextColor { get; set; } = Color.Empty;
+        public Color MainBGColor { get; set; } = Color.Empty;
+        public Color MainLineColor { get; set; } = Color.Black;
+        public Color MainShadowColor { get; set; } = Color.DarkGray;
+        public Color MainTextColor { get; set; } = Color.Empty;
 
         #region Painting Events
+
         public RoundedButtons()
         {
             MouseEventClick = (sender, e) => Button_MouseAction(sender, e, ButtonAction.Click);
@@ -52,7 +118,29 @@ namespace PCAFFINITY
             EventHighlight = (sender, e) => Button_MouseAction(sender, e, ButtonAction.Highlight);
             EventNormal = (sender, e) => Button_MouseAction(sender, e, ButtonAction.Normal);
         }
-        #pragma warning disable IDE0060 // Remove unused parameter
+
+#pragma warning disable IDE0060 // Remove unused parameter
+
+        private void B_Paint(object sender, PaintEventArgs e)
+        {
+            RoundedButton_Paint(sender, e, ButtonAction.Normal);
+        }
+
+        private void B_Paint_Click(object sender, PaintEventArgs e)
+        {
+            RoundedButton_Paint(sender, e, ButtonAction.Click);
+        }
+
+        private void B_Paint_Disable(object sender, PaintEventArgs e)
+        {
+            RoundedButton_Paint(sender, e, ButtonAction.Disabled);
+        }
+
+        private void B_Paint_Hightlight(object sender, PaintEventArgs e)
+        {
+            RoundedButton_Paint(sender, e, ButtonAction.Highlight);
+        }
+
         private void Button_MouseAction(object sender, EventArgs e, ButtonAction action)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
@@ -72,15 +160,23 @@ namespace PCAFFINITY
 
             b.Refresh();
         }
-        private void B_Paint(object sender, PaintEventArgs e)
-        { RoundedButton_Paint(sender, e, ButtonAction.Normal); }
-        private void B_Paint_Hightlight(object sender, PaintEventArgs e)
-        { RoundedButton_Paint(sender, e, ButtonAction.Highlight); }
-        private void B_Paint_Click(object sender, PaintEventArgs e)
-        { RoundedButton_Paint(sender, e, ButtonAction.Click); }
-        private void B_Paint_Disable(object sender, PaintEventArgs e)
-        { RoundedButton_Paint(sender, e, ButtonAction.Disabled); }
-        #endregion
+
+        #endregion Painting Events
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public string GetButtonText(Button button)
+        {
+            string text = "";
+            _ButtonDataDictionary.TryGetValue(button, out Button copy);
+            if (copy != null) { text = copy.Text; }
+            return text;
+        }
 
         public void PaintButton(object sender)
         {
@@ -112,6 +208,38 @@ namespace PCAFFINITY
                 b.Refresh();
             }
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing) { }
+
+                Button[] keys = _ButtonDataDictionary.Keys.ToArray();
+                for (int i = 0; i < keys.Length; i++)
+                {
+                    Button b = _ButtonDataDictionary.ElementAt(i).Key;
+                    Button copy = _ButtonDataDictionary.ElementAt(i).Value;
+
+                    b.Paint -= B_Paint;
+                    b.EnabledChanged -= EventNormal;
+                    b.MouseEnter -= EventHighlight;
+                    b.MouseLeave -= EventNormal;
+                    b.MouseDown -= MouseEventClick;
+                    b.MouseUp -= MouseEventHighlight;
+                    b.TextChanged -= B_TextChanged;
+
+                    copy.Copy(ref b);
+                    copy.Dispose();
+
+                    b.Refresh();
+                }
+
+                _ButtonDataDictionary.Clear();
+                IsDisposed = true;
+            }
+        }
+
         private void B_TextChanged(object sender, EventArgs e)
         {
             Button b = (Button)sender;
@@ -122,21 +250,51 @@ namespace PCAFFINITY
             b.Text = "";
             b.TextChanged += B_TextChanged;
         }
-        public string GetButtonText(Button button)
+
+        private Rectangle[] CalculateRects(Button b, int shadowWidth)
         {
-            string text = "";
-            _ButtonDataDictionary.TryGetValue(button, out Button copy);
-            if (copy != null) { text = copy.Text; }
-            return text;
+            int width = b.Size.Width - 1;
+            int height = b.Size.Height - 1;
+            if (Btn_ShadowLocation.ToString().Contains("Bottom") || Btn_ShadowLocation.ToString().Contains("Top"))
+            { height -= Btn_LineWidth * 2; height -= shadowWidth; }
+            if (Btn_ShadowLocation.ToString().Contains("Right") || Btn_ShadowLocation.ToString().Contains("Left"))
+            { width -= Btn_LineWidth * 2; width -= shadowWidth; }
+
+            Size size = new Size(width, height);
+
+            Rectangle shadow = new Rectangle(new Point(0, 0), size);
+            Rectangle button = new Rectangle(new Point(0, 0), size);
+
+            if (Btn_ShadowLocation.ToString().Contains("Right"))
+            {
+                shadow.X = shadowWidth;
+                button.X = 0;
+            }
+            if (Btn_ShadowLocation.ToString().Contains("Bottom"))
+            {
+                shadow.Y = shadowWidth;
+                button.Y = 0;
+            }
+            if (Btn_ShadowLocation.ToString().Contains("Left"))
+            {
+                shadow.X = 0;
+                button.X = shadowWidth;
+            }
+            if (Btn_ShadowLocation.ToString().Contains("Top"))
+            {
+                shadow.Y = 0;
+                button.Y = shadowWidth;
+            }
+            return new Rectangle[] { shadow, button };
         }
 
         private void RoundedButton_Paint(object sender, PaintEventArgs e, ButtonAction action = ButtonAction.Normal)
         {
             Button b = (Button)sender;
-            if (b.Enabled == false) { action = ButtonAction.Disabled; }
+            if (!b.Enabled) { action = ButtonAction.Disabled; }
 
             //================Setup================
-            
+
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
             e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
@@ -146,7 +304,6 @@ namespace PCAFFINITY
             {
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center
-
             };
 
             int shadowWidth = (Btn_ShadowWidth == ShadowSize.Thin) ? 1 : (Btn_ShadowWidth == ShadowSize.Normal) ? 2 : (Btn_ShadowWidth == ShadowSize.Thick) ? 3 : 0;
@@ -205,9 +362,9 @@ namespace PCAFFINITY
                 using Brush shadowBrush = new SolidBrush(shadowColor);
                 using Pen shadowPen = new Pen(shadowBrush, shadowWidth * 2);
                 if (b.Parent is PictureBox || copy.BackColor == Color.FromArgb(0, 255, 255, 255)) { e.Graphics.DrawRoundedRectanglePart(shadowPen, rect[0], Btn_CornerRadius, Btn_ShadowLocation); }
-                else {  e.Graphics.DrawRoundedRectangle(shadowPen, rect[0], Btn_CornerRadius); }
+                else { e.Graphics.DrawRoundedRectangle(shadowPen, rect[0], Btn_CornerRadius); }
             }
-            
+
             //Draw over any existing button graphics
             using Brush clearBrush = new SolidBrush((b.Parent is PictureBox) ? Color.FromArgb(0, 255, 255, 255) : ExtensionMethods.GetParentBackColor(b));
             e.Graphics.FillRoundedRectangle(clearBrush, rect[1], Btn_CornerRadius);
@@ -228,187 +385,60 @@ namespace PCAFFINITY
             e.Graphics.DrawString(copy.Text, b.Font, textBrush, rect[1], stringFormat);
             //=====================================
         }
-
-        private Rectangle[] CalculateRects(Button b, int shadowWidth)
-        {
-            int width = b.Size.Width - 1;
-            int height = b.Size.Height - 1;
-            if (Btn_ShadowLocation.ToString().Contains("Bottom") || Btn_ShadowLocation.ToString().Contains("Top"))
-            { height -= Btn_LineWidth * 2; height -= shadowWidth; }
-            if (Btn_ShadowLocation.ToString().Contains("Right") || Btn_ShadowLocation.ToString().Contains("Left"))
-            { width -= Btn_LineWidth * 2; width -= shadowWidth; }
-
-            Size size = new Size(width, height);
-
-            Rectangle shadow = new Rectangle(new Point(0, 0), size);
-            Rectangle button = new Rectangle(new Point(0, 0), size);
-
-            if (Btn_ShadowLocation.ToString().Contains("Right"))
-            {
-                shadow.X = shadowWidth;
-                button.X = 0;
-            }
-            if (Btn_ShadowLocation.ToString().Contains("Bottom"))
-            {
-                shadow.Y = shadowWidth;
-                button.Y = 0;
-            }
-            if (Btn_ShadowLocation.ToString().Contains("Left"))
-            {
-                shadow.X = 0;
-                button.X = shadowWidth;
-            }
-            if (Btn_ShadowLocation.ToString().Contains("Top"))
-            {
-                shadow.Y = 0;
-                button.Y = shadowWidth;
-            }
-            return new Rectangle[] { shadow, button };
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!IsDisposed)
-            {
-                if (disposing) { }
-
-                Button[] keys = _ButtonDataDictionary.Keys.ToArray();
-                for (int i = 0; i < keys.Length; i++)
-                {
-                    Button b = _ButtonDataDictionary.ElementAt(i).Key;
-                    Button copy = _ButtonDataDictionary.ElementAt(i).Value;
-
-                    b.Paint -= B_Paint;
-                    b.EnabledChanged -= EventNormal;
-                    b.MouseEnter -= EventHighlight;
-                    b.MouseLeave -= EventNormal;
-                    b.MouseDown -= MouseEventClick;
-                    b.MouseUp -= MouseEventHighlight;
-                    b.TextChanged -= B_TextChanged;
-
-                    copy.Copy(ref b);
-                    copy.Dispose();
-
-                    b.Refresh();
-                }
-
-                _ButtonDataDictionary.Clear();
-                IsDisposed = true;
-            }
-        }
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 
-
-    public enum ButtonAction
+    internal static class ExtensionMethods
     {
-        Highlight,
-        Click,
-        Disabled,
-        Normal
-    }
-    public enum ShadowPosition
-    {
-        BottomRight,
-        Bottom,
-        BottomLeft,
-        Left,
-        TopLeft,
-        Top,
-        TopRight,
-        Right
-    }
-    public enum ShadowSize
-    {
-        Thin,
-        Normal,
-        Thick,
-        None
-    }
-
-    public static class ControlExtensions
-    {
-        public static T Clone<T>(this T controlToClone)
-            where T : Control
-        {
-            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            T instance = Activator.CreateInstance<T>();
-
-            foreach (PropertyInfo propInfo in controlProperties)
-            {
-                if (propInfo.CanWrite)
-                {
-                    if (propInfo.Name != "WindowTarget")
-                        propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
-                }
-            }
-
-            return instance;
-        }
-        public static void Copy<T>(this T controlToClone, ref T targetControl)
-            where T : Control
-        {
-            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (PropertyInfo propInfo in controlProperties)
-            {
-                if (propInfo.CanWrite)
-                {
-                    if (propInfo.Name != "WindowTarget")
-                    { propInfo.SetValue(targetControl, propInfo.GetValue(controlToClone, null), null); }
-                }
-            }
-        }
-    }
-
-    static class ExtensionMethods
-    {
-        internal static Color GetParentBackColor(object sender)
-        {
-            Color c;
-            try { c = (sender as dynamic).Parent.BackColor; }
-            catch { c = Color.White; }
-
-            if (c == Color.Transparent)
-            { try { c = GetParentBackColor((sender as dynamic).Parent); } catch { c = Color.White; } }
-
-            return c;
-        }
         public static void DrawRoundedRectangle(this Graphics graphics, Pen pen, Rectangle bounds, int cornerRadius)
         {
             using GraphicsPath path = RoundedRect(bounds, cornerRadius);
             graphics.DrawPath(pen, path);
         }
+
         public static void DrawRoundedRectanglePart(this Graphics graphics, Pen pen, Rectangle bounds, int cornerRadius, ShadowPosition position)
         {
             using GraphicsPath path = RoundedRectPart(bounds, cornerRadius, position);
             path.Flatten(new Matrix(), 0.12f);
 
             PointF prevP = new PointF();
-            int total = path.PathPoints.Count();
+            int total = path.PathPoints.Length;
             int count = 1;
             float penSize;
 
             int trim;
             if (position == ShadowPosition.Bottom || position == ShadowPosition.Top || position == ShadowPosition.Left || position == ShadowPosition.Right)
-            { trim = 1; }
+            {
+                trim = 1;
+            }
             else
-            { trim = 2; }
+            {
+                trim = 2;
+            }
 
             foreach (PointF p in path.PathPoints)
             {
-                if (prevP.IsEmpty || count <= trim || count >= total - trim) { prevP = p; count++; continue; }
+                if (prevP.IsEmpty || count <= trim || count >= total - trim)
+                {
+                    prevP = p; count++; continue;
+                }
 
-                if (count <= 3 || count >= total - 3) { penSize = 1; }
-                else if (count <= 5 || count >= total - 5) { penSize = 2; }
-                else if (count <= 8 || count >= total - 8) { penSize = 3; }
-                else { penSize = pen.Width; }
+                if (count <= 3 || count >= total - 3)
+                {
+                    penSize = 1;
+                }
+                else if (count <= 5 || count >= total - 5)
+
+                {
+                    penSize = 2;
+                }
+                else if (count <= 8 || count >= total - 8)
+                {
+                    penSize = 3;
+                }
+                else
+                {
+                    penSize = pen.Width;
+                }
                 if (penSize > pen.Width) { penSize = pen.Width; }
                 graphics.DrawLine(new Pen(pen.Color, penSize), prevP, p);
                 prevP = p;
@@ -421,6 +451,34 @@ namespace PCAFFINITY
             using GraphicsPath path = RoundedRect(bounds, cornerRadius);
             graphics.FillPath(brush, path);
         }
+
+        internal static Color GetParentBackColor(object sender)
+        {
+            Color c;
+            try
+            {
+                c = (sender as dynamic)?.Parent.BackColor;
+            }
+            catch
+            {
+                c = Color.White;
+            }
+
+            if (c == Color.Transparent)
+            {
+                try
+                {
+                    c = GetParentBackColor((sender as dynamic)?.Parent);
+                }
+                catch
+                {
+                    c = Color.White;
+                }
+            }
+
+            return c;
+        }
+
         internal static GraphicsPath RoundedRect(Rectangle bounds, int radius)
         {
             int diameter = radius * 2;
@@ -449,13 +507,14 @@ namespace PCAFFINITY
             path.CloseFigure();
             return path;
         }
+
         internal static GraphicsPath RoundedRectPart(Rectangle bounds, int radius, ShadowPosition position)
         {
             int diameter = radius * 2;
             Size size = new Size(diameter, diameter);
             Rectangle arc = new Rectangle(bounds.Location, size);
             GraphicsPath path = new GraphicsPath
-            { FillMode = FillMode.Alternate,  };
+            { FillMode = FillMode.Alternate, };
 
             if (radius == 0)
             {
