@@ -95,6 +95,7 @@
         public int Btn_LineWidth { get; set; } = 1;
         public ShadowPosition Btn_ShadowLocation { get; set; }
         public ShadowSize Btn_ShadowWidth { get; set; } = ShadowSize.Normal;
+        public Padding Btn_TextPadding { get; set; } = new Padding(0);
 
         public Color ClickBGColor { get; set; } = Color.Empty;
         public Color ClickLineColor { get; set; } = Color.Black;
@@ -389,7 +390,13 @@
                 //Button text is set to "" so that transparency will not show the original text.
                 //I use a copy of the button to pull the text to draw.
                 using Brush textBrush = new SolidBrush(textColor.IsEmpty ? b.ForeColor : textColor);
-                e.Graphics.DrawString(copy.Text, b.Font, textBrush, rect[1], stringFormat);
+                Rectangle rectangleText = new Rectangle(
+                    rect[1].X + Btn_TextPadding.Left,
+                    rect[1].Y + Btn_TextPadding.Top,
+                    rect[1].Width - Btn_TextPadding.Right,
+                    rect[1].Height - Btn_TextPadding.Bottom
+                    );
+                e.Graphics.DrawString(copy.Text, b.Font, textBrush, rectangleText, stringFormat);
 
                 //=====================================
             }
