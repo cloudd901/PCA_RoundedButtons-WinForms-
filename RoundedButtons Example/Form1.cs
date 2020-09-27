@@ -142,5 +142,15 @@
             roundedButtons4.PaintButton(button15);
             roundedButtons4.PaintButton(button16);
         }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            button16.Visible = false;
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            button16.Visible = true;
+        }
     }
 }

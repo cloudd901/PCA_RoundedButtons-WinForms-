@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\RoundedButtons %28WinForms%29\RoundedButtons.cs">
+      <Link>RoundedButtons.cs</Link>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,12 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\spots.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RoundedButtons %28WinForms%29\RoundedButtons %28WinForms%29.csproj">
-      <Project>{53979571-5bb1-4dca-bde5-4b7135aa3020}</Project>
-      <Name>RoundedButtons %28WinForms%29</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

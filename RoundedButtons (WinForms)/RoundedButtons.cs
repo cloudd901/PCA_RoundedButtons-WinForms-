@@ -158,8 +158,51 @@
                 b.MouseDown += MouseEventClick;
                 b.MouseUp += MouseEventHighlight;
                 b.TextChanged += B_TextChanged;
+                b.VisibleChanged += B_VisibleChanged;
 
                 b.Refresh();
+            }
+        }
+
+        private void B_VisibleChanged(object sender, EventArgs e)
+        {
+            if (sender is Button b)
+            {
+                _ButtonDataDictionary[b].Visible = b.Visible;
+                //if (!b.Visible)
+                //{
+                //    PaintButtonRemove(b);
+                //    b.Visible = false;
+                //}
+                //else
+                //{
+                //    if (!_ButtonDataDictionary.ContainsKey(b))
+                //    {
+                //        PaintButton(b);
+                //    }
+                //}
+            }
+        }
+
+        public void PaintButtonRemove(object sender)
+        {
+            if (sender is Button b)
+            {
+                Button copy = _ButtonDataDictionary[b];
+
+                b.Paint -= B_Paint;
+                b.EnabledChanged -= EventNormal;
+                b.MouseEnter -= EventHighlight;
+                b.MouseLeave -= EventNormal;
+                b.MouseDown -= MouseEventClick;
+                b.MouseUp -= MouseEventHighlight;
+                b.TextChanged -= B_TextChanged;
+                b.VisibleChanged -= B_VisibleChanged;
+                copy?.Copy(ref b);
+                copy?.Dispose();
+                b?.Refresh();
+
+                _ButtonDataDictionary.Remove(b);
             }
         }
 
@@ -180,6 +223,7 @@
                     b.MouseDown -= MouseEventClick;
                     b.MouseUp -= MouseEventHighlight;
                     b.TextChanged -= B_TextChanged;
+                    b.VisibleChanged -= B_VisibleChanged;
                     copy?.Copy(ref b);
                     copy?.Dispose();
                     b?.Refresh();
@@ -312,6 +356,10 @@
                 int shadowWidth = (Btn_ShadowWidth == ShadowSize.Thin) ? 1 : (Btn_ShadowWidth == ShadowSize.Normal) ? 2 : (Btn_ShadowWidth == ShadowSize.Thick) ? 3 : 0;
                 Rectangle[] rect = CalculateRects(b, shadowWidth);
                 _ButtonDataDictionary.TryGetValue(b, out Button copy);
+                if (copy == null)
+                {
+                    return;
+                }
 
                 //=====================================
                 //===============Colors================

@@ -266,6 +266,7 @@
             this.button15.TabIndex = 6;
             this.button15.Text = "Grey";
             this.button15.UseVisualStyleBackColor = false;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
             // panel5
             // 
@@ -289,6 +290,7 @@
             this.button16.Text = "Transparent";
             this.button16.UseCompatibleTextRendering = true;
             this.button16.UseVisualStyleBackColor = false;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
             // groupBox1
             // 
