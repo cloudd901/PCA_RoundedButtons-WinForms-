@@ -120,6 +120,11 @@
             GC.SuppressFinalize(this);
         }
 
+        public Button GetOriginalButtonCopy(Button button)
+        {
+            return _ButtonDataDictionary[button];
+        }
+
         public string GetButtonText(Button button)
         {
             string text = "";
@@ -169,18 +174,6 @@
             if (sender is Button b)
             {
                 _ButtonDataDictionary[b].Visible = b.Visible;
-                //if (!b.Visible)
-                //{
-                //    PaintButtonRemove(b);
-                //    b.Visible = false;
-                //}
-                //else
-                //{
-                //    if (!_ButtonDataDictionary.ContainsKey(b))
-                //    {
-                //        PaintButton(b);
-                //    }
-                //}
             }
         }
 
