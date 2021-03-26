@@ -286,12 +286,12 @@
             int height = b.Size.Height - 1;
             if (Btn_ShadowLocation.ToString().Contains("Bottom") || Btn_ShadowLocation.ToString().Contains("Top"))
             {
-                height -= Btn_LineWidth * 2; height -= shadowWidth;
+                height -= (Btn_LineWidth == 0 ? 1 : Btn_LineWidth) * 2; height -= shadowWidth;
             }
 
             if (Btn_ShadowLocation.ToString().Contains("Right") || Btn_ShadowLocation.ToString().Contains("Left"))
             {
-                width -= Btn_LineWidth * 2; width -= shadowWidth;
+                width -= (Btn_LineWidth == 0 ? 1 : Btn_LineWidth) * 2; width -= shadowWidth;
             }
 
             Size size = new Size(width, height);
@@ -399,6 +399,7 @@
 
                 //=====================================
                 //==============Drawing================
+
                 if (shadowWidth > 0)
                 {
                     //Draw shadow in the back
@@ -422,10 +423,26 @@
                 using Brush backBrush = new SolidBrush(bgColor);
                 e.Graphics.FillRoundedRectangle(backBrush, rect[1], Btn_CornerRadius);
 
-                //Draw outline of the button
-                using Brush buttonBrush = new SolidBrush(lineColor);
-                using Pen buttonPen = new Pen(buttonBrush, Btn_LineWidth);
-                e.Graphics.DrawRoundedRectangle(buttonPen, rect[1], Btn_CornerRadius);
+                if (b.Image != null)
+                {
+                    e.Graphics.InterpolationMode = InterpolationMode.Default;
+                    if (Btn_LineWidth > 0)
+                    {
+                        e.Graphics.DrawImage(b.Image, rect[0].X, rect[0].Y, rect[0].Width, rect[0].Height + 1);
+                    }
+                    else
+                    {
+                        e.Graphics.DrawImage(b.Image, rect[0].X-1, rect[0].Y-1, rect[0].Width + 2, rect[0].Height + 3);
+                    }
+                }
+
+                if (Btn_LineWidth > 0)
+                {
+                    //Draw outline of the button
+                    using Brush buttonBrush = new SolidBrush(lineColor);
+                    using Pen buttonPen = new Pen(buttonBrush, Btn_LineWidth);
+                    e.Graphics.DrawRoundedRectangle(buttonPen, rect[1], Btn_CornerRadius);
+                }
 
                 //Draw text of the button
                 //Button text is set to "" so that transparency will not show the original text.

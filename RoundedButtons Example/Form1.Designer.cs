@@ -57,6 +57,8 @@
             this.button17 = new System.Windows.Forms.Button();
             this.button18 = new System.Windows.Forms.Button();
             this.button19 = new System.Windows.Forms.Button();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.button20 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -66,6 +68,7 @@
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -266,7 +269,7 @@
             this.button15.TabIndex = 6;
             this.button15.Text = "Grey";
             this.button15.UseVisualStyleBackColor = false;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
+            this.button15.Click += new System.EventHandler(this.Button15_Click);
             // 
             // panel5
             // 
@@ -290,7 +293,7 @@
             this.button16.Text = "Transparent";
             this.button16.UseCompatibleTextRendering = true;
             this.button16.UseVisualStyleBackColor = false;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
+            this.button16.Click += new System.EventHandler(this.Button16_Click);
             // 
             // groupBox1
             // 
@@ -367,12 +370,30 @@
             this.button19.UseVisualStyleBackColor = true;
             this.button19.Click += new System.EventHandler(this.Button19_Click);
             // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.button20);
+            this.panel6.Location = new System.Drawing.Point(165, 177);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(215, 44);
+            this.panel6.TabIndex = 15;
+            // 
+            // button20
+            // 
+            this.button20.Image = global::RoundedButtons_Example.Properties.Resources.about;
+            this.button20.Location = new System.Drawing.Point(89, 8);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(24, 24);
+            this.button20.TabIndex = 0;
+            this.button20.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gainsboro;
-            this.ClientSize = new System.Drawing.Size(540, 159);
+            this.ClientSize = new System.Drawing.Size(540, 233);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.button19);
             this.Controls.Add(this.button18);
             this.Controls.Add(this.button17);
@@ -393,6 +414,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -427,6 +449,8 @@
         private System.Windows.Forms.Button button17;
         private System.Windows.Forms.Button button18;
         private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Button button20;
     }
 }
 

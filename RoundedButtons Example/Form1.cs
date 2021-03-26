@@ -13,6 +13,8 @@
         public RoundedButtons roundedButtons3;
         public RoundedButtons roundedButtons4;
 
+        public RoundedButtons roundedButtons5;
+
         public Form1()
         {
             InitializeComponent();
@@ -74,6 +76,31 @@
             RoundSection1();
             RoundSection2();
             RoundSection3();
+
+            RoundSection5();
+        }
+
+        private void RoundSection5()
+        {
+            roundedButtons5 = new RoundedButtons()
+            {
+                Btn_LineWidth = 0,
+                Btn_CornerRadius = 10,
+                Btn_ShadowWidth = ShadowSize.Thin,
+                MainShadowColor = Color.Gray,
+                Btn_ShadowLocation = ShadowPosition.BottomRight
+            };
+
+            foreach (dynamic parent in new List<dynamic>() { panel6 })
+            {
+                foreach (object o in parent.Controls)
+                {
+                    if (o is Button b)
+                    {
+                        roundedButtons5.PaintButton(b);
+                    }
+                }
+            }
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -143,12 +170,12 @@
             roundedButtons4.PaintButton(button16);
         }
 
-        private void button16_Click(object sender, EventArgs e)
+        private void Button16_Click(object sender, EventArgs e)
         {
             button16.Visible = false;
         }
 
-        private void button15_Click(object sender, EventArgs e)
+        private void Button15_Click(object sender, EventArgs e)
         {
             button16.Visible = true;
         }
